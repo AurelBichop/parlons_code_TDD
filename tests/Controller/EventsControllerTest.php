@@ -74,7 +74,7 @@ class EventsControllerTest extends WebTestCase
             ->seeText(mb_substr($event1->getDescription(), 0, Event::DESCRIPTION_TRUNCATE_LIMIT))
             ->dontSeeText(mb_substr($event1->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT))
             ->seeText($event1->getLocation())
-            ->seeText('$0')
+            ->seeText('FREE!')
             ->seeText($event1->getStartsAt()->format($this->getParameter('app.default_date_format')))
             ->seeText($event2->getName())
             ->seeText(mb_substr($event2->getDescription(), 0, Event::DESCRIPTION_TRUNCATE_LIMIT))
@@ -141,5 +141,38 @@ class EventsControllerTest extends WebTestCase
             ->assertResponseOk()
             ->clickLink($event2->getName())
             ->seePageIs('/events/' . $event2->getId());
+    }
+
+    /** @test */
+    public function the_event_price_should_be_displayed_if_the_price_is_neither_zero_or_null()
+    {
+        //Arrange
+        $event = $this->createEvent(['price' => 25]);
+
+        //Act
+        $this->visit('/events/' . $event->getId())
+            ->assertResponseOk()
+            ->seeText('$25');
+    }
+
+    /** @test */
+    public function free_should_be_displayed_if_the_price_is_zero()
+    {
+        $event = $this->createEvent(['price' => 0]);
+        
+       
+        $this->visit('/events/' . $event->getId())
+            ->assertResponseOk()
+            ->seeText('FREE!');            
+    }
+
+    /** @test */
+    public function free_should_be_displayed_if_the_price_is_null()
+    {
+        $event = $this->createEvent(['price' => null]);
+
+        $this->visit('/events/' . $event->getId())
+            ->assertResponseOk()
+            ->seeText('FREE!');
     }
 }

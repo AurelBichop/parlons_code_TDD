@@ -10,7 +10,9 @@
 	<h3>Location :</h3>
 	<p>{{ event.location }}</p>
 	<h3>Price :</h3>
-	<p>${{ event.price }}</p>
+	<p>
+		{{ format_price(event) }}
+	</p>
 
 
 </article>

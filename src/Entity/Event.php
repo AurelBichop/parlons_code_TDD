@@ -125,4 +125,14 @@ class Event
 
         return $this;
     }
+
+    /**
+     * Check if an event is free or not
+     *
+     * @return boolean
+     */
+    public function isFree():bool
+    {
+        return $this->getPrice() == 0 || is_null($this->getPrice());
+    }
 }

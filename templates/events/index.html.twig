@@ -13,7 +13,7 @@
         <ul>
             <li><strong>Date : </strong>{{ event.startsAt|date }}</li>
             <li><strong>Location : </strong>{{ event.location }}</li>
-            <li><strong>Price : </strong> ${{ event.price }}</li>
+            <li><strong>Price : </strong>{{ format_price(event) }}</li>
         </ul>
 
     </article>
