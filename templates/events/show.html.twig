@@ -1,0 +1,18 @@
+<article>
+	<header>
+		<h1>{{event.name}}</h1>
+	</header>
+
+	<p>{{event.description}}</p>
+
+	<h3>Date :</h3>
+	<p>{{ event.startsAt|date }}</p>
+	<h3>Location :</h3>
+	<p>{{ event.location }}</p>
+	<h3>Price :</h3>
+	<p>${{ event.price }}</p>
+
+
+</article>
+
+<a href="{{ path('events.index') }}">All Events</a>

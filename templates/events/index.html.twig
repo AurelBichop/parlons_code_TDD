@@ -1,0 +1,22 @@
+<h1>{{ events|length }} Events</h1>
+
+{% for event in events %}
+    <article>
+        <header>
+            <h2><a href="{{path('events.show',{'id':event.id})}}">{{event.name}}</a></h2>
+        </header>
+
+<p>{{event.description[:constant('DESCRIPTION_TRUNCATE_LIMIT', event)] ~ '...'}}</p>
+
+
+
+        <ul>
+            <li><strong>Date : </strong>{{ event.startsAt|date }}</li>
+            <li><strong>Location : </strong>{{ event.location }}</li>
+            <li><strong>Price : </strong> ${{ event.price }}</li>
+        </ul>
+
+    </article>
+    
+{% endfor %}
+
