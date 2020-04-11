@@ -10,14 +10,16 @@ use Symfony\Component\Routing\Annotation\Route;
 class EventsController extends AbstractController
 {
     /**
+     * @Route("/", name="home", methods={"GET"})
      * @Route("/events", name="events.index", methods={"GET"})
      */
     public function index(EventRepository $repo)
     {
         //$descriptionTruncateLimit = $this->getParameter('app.description_truncate_limit');
         //return $this->json(['status' => true, 'message' => 'hello from my API']);
-        $events = $repo->findAll();
-        return $this->render('events/index.html.twig', compact('events'));
+        $upcomingEvents = $repo->findUpComing();
+
+        return $this->render('events/index.html.twig', ['events'=>$upcomingEvents]);
     }
 
     /**

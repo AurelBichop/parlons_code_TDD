@@ -1,4 +1,4 @@
-<h1>{{ events|length }} Events</h1>
+<h1>{{ pluralize(events|length, 'Event', 'Events') }}</h1>
 
 {% for event in events %}
     <article>

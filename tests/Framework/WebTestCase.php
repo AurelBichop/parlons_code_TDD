@@ -13,6 +13,8 @@ class WebTestCase extends BaseWebTestCase
     protected $em;
 
     protected $crawler;
+    
+    protected $response;
 
     protected $responseContent;
 
@@ -47,6 +49,8 @@ class WebTestCase extends BaseWebTestCase
     protected function visit(string $url): self
     {
         $this->crawler = $this->client->request('GET', $url);
+
+        $this->response = $this->client->getResponse();
 
         $this->responseContent = $this->client->getResponse()->getContent();
 
@@ -148,7 +152,7 @@ class WebTestCase extends BaseWebTestCase
             $expliciteEceptionMessage = $this->crawler->filter('h1.exception-message')->eq(0)->text();
 
             throw new $trowableClass(
-                $t->getMessage() . ' | ' . $expliciteEceptionMessage
+                $t->getMessage() . ' | ' . $this->response->getStatusCode() . ' - ' .$expliciteEceptionMessage
             );
         }
 

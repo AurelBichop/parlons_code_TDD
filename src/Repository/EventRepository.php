@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Event;
+use DateTime;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
@@ -17,6 +18,20 @@ class EventRepository extends ServiceEntityRepository
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Event::class);
+    }
+
+
+    /**
+    * @return Event[] Returns an array of upcoming Event objects
+    */
+    public function findUpComing()
+    {
+        return $this->createQueryBuilder('e')
+            ->andWhere('e.startsAt >= :now')
+            ->setParameter('now', new DateTime())
+            ->orderBy('e.startsAt', 'ASC')
+            ->getQuery()
+            ->getResult();
     }
 
     // /**

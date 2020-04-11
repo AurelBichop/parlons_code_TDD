@@ -23,11 +23,26 @@ class AppExtension extends AbstractExtension
     {
         return [
             new TwigFunction('format_price', [$this, 'formatPrice'], ['is_safe' => ['html']]),
+            new TwigFunction('pluralize', [$this, 'pluralize']),
         ];
     }
 
     public function formatPrice(Event $event)
     {
-        return $event->isFree() ? '<strong>FREE!</strong>' : '$'.$event->getPrice();
+        return $event->isFree() ? '<strong>FREE!</strong>' : '$' . $event->getPrice();
+    }
+
+    public function pluralize($count, string $singular, string $plural = null)
+    {
+       
+        if (!is_numeric($count)) {
+            throw new \InvalidArgumentException("{$count} must be a numeric value");
+        }
+
+        $plural = $plural ?? $singular . 's';
+
+        $string = $count == 1 ? $singular : $plural;
+
+        return "{$count} {$string}";
     }
 }

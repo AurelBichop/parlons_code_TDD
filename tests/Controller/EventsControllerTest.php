@@ -91,7 +91,7 @@ class EventsControllerTest extends WebTestCase
     }
 
     /** @test */
-    public function show_should_event_details()
+    public function show_should_list_the_event_details()
     {
         //Arrange
         $event = $this->createEvent(['price' => 25]);
@@ -107,6 +107,25 @@ class EventsControllerTest extends WebTestCase
             ->seeText($event->getLocation())
             ->seeText('$25')
             ->seeText($event->getStartsAt()->format($this->getParameter('app.default_date_format')));
+    }
+
+    /** @test */
+    public function show_should_return_a_404_response_if_we_cant_find_an_event_with_the_specified_id()
+    {
+        //Arrange
+        $event1 = $this->createEvent(['price' => 25]);
+
+
+        //Act
+        $this->visit('/events/' . $event1->getId())
+        
+        //Assertion
+            ->assertResponseOk();
+
+        $this->visit('/events/2000')
+            ->seeStatusCode(404);    
+
+
     }
 
     /** @test */
