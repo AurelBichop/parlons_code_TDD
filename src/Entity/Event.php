@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class Event
 {
+    public const NUM_ITEMS = 3;
+
     public const DESCRIPTION_TRUNCATE_LIMIT = 25;
+    
     /**
      * @ORM\Id()
      * @ORM\GeneratedValue()

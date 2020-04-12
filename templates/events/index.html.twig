@@ -1,22 +1,56 @@
-<h1>{{ pluralize(events|length, 'Event', 'Events') }}</h1>
+{% extends "base.html.twig" %}
 
-{% for event in events %}
-    <article>
-        <header>
-            <h2><a href="{{path('events.show',{'id':event.id})}}">{{event.name}}</a></h2>
-        </header>
+{% block body %}
 
-<p>{{event.description[:constant('DESCRIPTION_TRUNCATE_LIMIT', event)] ~ '...'}}</p>
+	{% if paginator.haveToPaginate() %}
+		
+		<h1>{{ pluralize(paginator|length, 'Event', 'Events') }}</h1>
+
+        {% set nbItemsCurrentPage = paginator.getCurrentPageResults.count %}
 
 
+		{% for event in paginator %}
 
-        <ul>
-            <li><strong>Date : </strong>{{ event.startsAt|date }}</li>
-            <li><strong>Location : </strong>{{ event.location }}</li>
-            <li><strong>Price : </strong>{{ format_price(event) }}</li>
-        </ul>
+			<article>
+				<header>
+					<h2>
+						<a href="{{path('events.show',{'id':event.id})}}">{{event.name}}</a>
+					</h2>
+				</header>
 
-    </article>
-    
-{% endfor %}
+				<p>{{event.description[:constant('DESCRIPTION_TRUNCATE_LIMIT', event)] ~ '...'}}</p>
 
+
+				<ul>
+					<li>
+						<strong>Date :
+						</strong>
+						{{ event.startsAt|date }}</li>
+					<li>
+						<strong>Location :
+						</strong>
+						{{ event.location }}</li>
+					<li>
+						<strong>Price :
+						</strong>
+						{{ format_price(event) }}</li>
+				</ul>
+
+			</article>
+
+            {% if nbItemsCurrentPage != loop.index %}
+			    <hr>
+            {% endif %}
+
+		{% endfor %}
+
+
+		<div class="pagerfanta">
+			{{ pagerfanta(paginator, 'default', { 'omitFirstPage': true}) }}
+		</div>
+	{% else %}
+		<h1>OUps</h1>
+		<p>pas d'evenements revenez plus tard</p>
+	{% endif %}
+
+{% endblock %}

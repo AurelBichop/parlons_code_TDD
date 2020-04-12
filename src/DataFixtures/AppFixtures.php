@@ -31,7 +31,8 @@ class AppFixtures extends Fixture
                 'location'    => $this->faker->city(),
                 'price'       => mt_rand(1, 10) > 5 ? $this->faker->numberBetween(15, 100) : 0,
                 'description' => $this->faker->paragraph(3),
-                'startsAt'    => $this->faker->dateTimeBetween('+10 days', '+100 days')
+                'startsAt'    => mt_rand(0,10) > 2 ? $this->faker->dateTimeBetween(
+                    '+10 days', '+100 days'):$this->faker->dateTimeBetween('-10 days, -5 days')
             ]);
 
 
