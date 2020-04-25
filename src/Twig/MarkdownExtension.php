@@ -18,11 +18,11 @@ class MarkdownExtension extends AbstractExtension
     public function getFilters(): array
     {
         return [
-            new TwigFilter('markdownify', [$this, 'parseMarkdown'], ['is_safe' => ['html']]),
+            new TwigFilter('markdownify', [$this, 'markdownify'], ['is_safe' => ['html']]),
         ];
     }
 
-    public function parseMarkdown(string $value): string
+    public function markdownify(string $value): string
     {
         return $this->markdownTransformer->parse($value);
     }
