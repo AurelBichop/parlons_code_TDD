@@ -3,7 +3,8 @@
 		<h1>{{event.name}}</h1>
 	</header>
 
-	<p>{{event.description}}</p>
+<p>{{event.description|markdownify}}</p>
+
 
 	<h3>Date :</h3>
 	<p>{{ event.startsAt|date }}</p>

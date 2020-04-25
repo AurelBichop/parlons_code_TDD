@@ -4,9 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Event;
 use App\Repository\EventRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+
 
 class EventsController extends AbstractController
 {
@@ -16,15 +17,17 @@ class EventsController extends AbstractController
      */
     public function index(EventRepository $repo, Request $request)
     {
-
+    
         //$descriptionTruncateLimit = $this->getParameter('app.description_truncate_limit');
         //return $this->json(['status' => true, 'message' => 'hello from my API']);
-       
+
         $paginator = $repo->getUpcomingOrderedByAscStartsAtPaginator(
             $request->query->getInt('page', 1)
         );
 
-        return $this->render('events/index.html.twig', ['paginator'=> $paginator]);
+        return $this->render('events/index.html.twig', compact(
+            'paginator'
+        ));
     }
 
     /**

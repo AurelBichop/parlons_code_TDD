@@ -2,12 +2,11 @@
 
 {% block body %}
 
-	{% if paginator.haveToPaginate() %}
+	{% if paginator|length > 0 %}
 		
 		<h1>{{ pluralize(paginator|length, 'Event', 'Events') }}</h1>
 
         {% set nbItemsCurrentPage = paginator.getCurrentPageResults.count %}
-
 
 		{% for event in paginator %}
 
@@ -18,7 +17,8 @@
 					</h2>
 				</header>
 
-				<p>{{event.description[:constant('DESCRIPTION_TRUNCATE_LIMIT', event)] ~ '...'}}</p>
+				{{event.description|markdownify|truncate(constant('DESCRIPTION_TRUNCATE_LIMIT', event))}}
+				{#<p>{{event.description[:constant('DESCRIPTION_TRUNCATE_LIMIT', event)] ~ '...'}}</p>#}
 
 
 				<ul>
@@ -44,11 +44,12 @@
 
 		{% endfor %}
 
+        {% if paginator.haveToPaginate() %}
+            <div class="pagerfanta">
+            {{ pagerfanta(paginator, { 'omitFirstPage': true}) }}
+            </div>
+        {% endif %}
 
-		<div class="pagerfanta">
-        {{ pagerfanta(paginator, 'twitter_bootstrap4', { 'omitFirstPage': true}) }}
-
-		</div>
 	{% else %}
 		<h1>OUps</h1>
 		<p>pas d'evenements revenez plus tard</p>

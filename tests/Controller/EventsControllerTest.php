@@ -96,7 +96,6 @@ class EventsControllerTest extends WebTestCase
         //Arrange
         $event = $this->createEvent(['price' => 25]);
 
-
         //Act
         $this->visit('/events/' . $event->getId())
 
