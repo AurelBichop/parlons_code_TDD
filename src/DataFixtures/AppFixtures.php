@@ -2,6 +2,7 @@
 
 namespace App\DataFixtures;
 
+use App\DataFixtures\Providers\EventProvider;
 use Faker\Factory;
 use App\Entity\Event;
 use Doctrine\Bundle\FixturesBundle\Fixture;
@@ -18,6 +19,7 @@ class AppFixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $this->faker = Factory::create();
+        $this->faker->addProvider(new EventProvider($this->faker));
 
         $this->addEvents($manager);
 
@@ -26,36 +28,18 @@ class AppFixtures extends Fixture
 
     private function addEvents(ObjectManager $manager){
 
-        for ($i = 0; $i <= 10; $i++) {
+        for ($i = 1; $i <= 10; $i++) {
             $event = new Event([
-                'name'        => $name = $this->faker->unique()->randomElement($this->eventNames()),
+                'name'        => $name = $this->faker->eventName(),
                 'location'    => $this->faker->city(),
                 'price'       => mt_rand(1, 10) > 5 ? $this->faker->numberBetween(15, 100) : 0,
                 'description' => 'This is the best **' . $name . '** ever !',
-                'startsAt'    => mt_rand(0,10) > 2 ? $this->faker->dateTimeBetween(
+                'startsAt'    => mt_rand(0,10) > 2  ? $this->faker->dateTimeBetween(
                     '+10 days', '+100 days'):$this->faker->dateTimeBetween('-10 days, -5 days')
             ]);
 
 
             $manager->persist($event);
         }
-    }
-
-
-    private function eventNames():array
-    {
-        return [
-            'Symfony Conférence',
-            'Lavarel Conférence',
-            'Django Conférence',
-            'Python Conférence',
-            'Java Conférence',
-            'Spring Conférence',
-            'Flash Conférence',
-            'Node.js Conférence',
-            'C++ Conférence',
-            'Javascript Conférence',
-            'Php Conférence',
-        ];
     }
 }
