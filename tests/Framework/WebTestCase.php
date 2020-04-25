@@ -2,11 +2,13 @@
 
 namespace App\Tests\Framework;
 
-use Doctrine\ORM\Tools\SchemaTool;
+use App\Tests\Framework\Traits\RefreshDatabase;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase as BaseWebTestCase;
+use Symfony\Component\DomCrawler\Crawler;
 
-class WebTestCase extends BaseWebTestCase
+abstract class WebTestCase extends BaseWebTestCase
 {
+    use RefreshDatabase;
 
     protected $client;
 
@@ -30,19 +32,8 @@ class WebTestCase extends BaseWebTestCase
         // $this->em->getConnection()->beginTransaction();
         // $this->em->getConnection()->setAutoCommit(false);
 
+        $this->refreshDatabase();
 
-        static $metadata = null;
-
-        if (is_null($metadata)) {
-            $metadata = $this->em->getMetadataFactory()->getAllMetadata();
-        }
-
-        $schemaTool = new SchemaTool($this->em);
-        $schemaTool->dropDatabase();
-
-        if (!empty($metadata)) {
-            $schemaTool->createSchema($metadata);
-        }
     }
 
 
@@ -54,6 +45,13 @@ class WebTestCase extends BaseWebTestCase
 
         $this->responseContent = $this->client->getResponse()->getContent();
 
+        return $this;
+    }
+
+    protected function assertElementTextContains(string $text,Crawler $element):self
+    {
+        $this->assertStringContainsString($text, $element->text());
+        
         return $this;
     }
 
@@ -128,6 +126,12 @@ class WebTestCase extends BaseWebTestCase
 
         dd($content);
     }
+
+    protected function filter(string $selector): Crawler
+    {
+        return $this->crawler->filter($selector);
+    }
+
 
     protected function getDoctrine()
     {

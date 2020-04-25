@@ -3,14 +3,14 @@
 {% block body %}
 
 	{% if paginator|length > 0 %}
-		
+
 		<h1>{{ pluralize(paginator|length, 'Event', 'Events') }}</h1>
 
-        {% set nbItemsCurrentPage = paginator.getCurrentPageResults.count %}
+		{% set nbItemsCurrentPage = paginator.getCurrentPageResults.count %}
 
 		{% for event in paginator %}
 
-			<article>
+			<article class="event">
 				<header>
 					<h2>
 						<a href="{{path('events.show',{'id':event.id})}}">{{event.name}}</a>
@@ -38,17 +38,17 @@
 
 			</article>
 
-            {% if nbItemsCurrentPage != loop.index %}
-			    <hr>
-            {% endif %}
+			{% if nbItemsCurrentPage != loop.index %}
+				<hr>
+			{% endif %}
 
 		{% endfor %}
 
-        {% if paginator.haveToPaginate() %}
-            <div class="pagerfanta">
-            {{ pagerfanta(paginator, { 'omitFirstPage': true}) }}
-            </div>
-        {% endif %}
+		{% if paginator.haveToPaginate() %}
+			<div class="pagerfanta">
+				{{ pagerfanta(paginator, { 'omitFirstPage': true}) }}
+			</div>
+		{% endif %}
 
 	{% else %}
 		<h1>OUps</h1>

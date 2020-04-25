@@ -4,31 +4,17 @@ namespace App\Tests\Controller;
 
 use DateTime;
 use App\Entity\Event;
+use App\Tests\EventFactory;
+use Cake\Utility\Text;
 use App\Tests\Framework\WebTestCase;
 
 
 class EventsControllerTest extends WebTestCase
 {
-    private function createEvent(array $overrides = [])
-    {
+    use EventFactory;
 
-        $data = array_merge([
-            'name'        => 'Super Conference',
-            'location'    => 'London, UK',
-            'price'       => 14,
-            'description' => 'Best Super Conférence Ever!',
-            'startsAt'    => new DateTime('+25 days')
-        ],$overrides);
-
-        $event = new Event($data);
-
-        $this->em->persist($event);
-        $this->em->flush();
-
-        return $event;
-    }
     /** @test */
-    public function index_should_list_all_events()
+    public function index_should_list_only_upcoming_events()
     {
         //dd(mb_substr('Event lol', 3));
         $event1 = $this->createEvent([
@@ -52,7 +38,7 @@ class EventsControllerTest extends WebTestCase
             'location'    => 'Dakar, SN',
             'price'       => 12,
             'description' => 'Best Django Conférence Ever!',
-            'startsAt'    => new DateTime('+1 month')
+            'startsAt'    => new DateTime('-1 month')
         ]);
 
 
@@ -69,25 +55,81 @@ class EventsControllerTest extends WebTestCase
         $this->visit('/events')
             //->dump()
             ->assertResponseOk()
-            ->seeText('3 Events')
+            ->seeText('2 Events')
             ->seeText($event1->getName())
-            ->seeText(mb_substr($event1->getDescription(), 0, Event::DESCRIPTION_TRUNCATE_LIMIT))
-            ->dontSeeText(mb_substr($event1->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT))
+            ->seeText(
+                Text::truncate($event1->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT, ['ellipsis' => '...', 'exact' => true, 'html' => true])
+            )
             ->seeText($event1->getLocation())
             ->seeText('FREE!')
             ->seeText($event1->getStartsAt()->format($this->getParameter('app.default_date_format')))
+
             ->seeText($event2->getName())
-            ->seeText(mb_substr($event2->getDescription(), 0, Event::DESCRIPTION_TRUNCATE_LIMIT))
-            ->dontSeeText(mb_substr($event2->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT))
+            ->seeText(
+                Text::truncate($event2->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT, ['ellipsis' => '...', 'exact' => true, 'html' => true])
+            )
             ->seeText($event2->getLocation())
             ->seeText('$25')
             ->seeText($event2->getStartsAt()->format($this->getParameter('app.default_date_format')))
-            ->seeText($event3->getName())
-            ->seeText(mb_substr($event3->getDescription(), 0, Event::DESCRIPTION_TRUNCATE_LIMIT))
-            ->dontSeeText(mb_substr($event3->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT))
-            ->seeText($event3->getLocation())
-            ->seeText('$12')
-            ->seeText($event3->getStartsAt()->format($this->getParameter('app.default_date_format')));
+
+            ->dontSeeText($event3->getName())
+            ->dontSeeText(
+                Text::truncate($event3->getDescription(), Event::DESCRIPTION_TRUNCATE_LIMIT, ['ellipsis' => '...', 'exact' => true, 'html' => true])
+                )
+            ->dontSeeText($event3->getLocation())
+            ->dontSeeText('$12')
+            ->dontSeeText($event3->getStartsAt()->format($this->getParameter('app.default_date_format')));
+    }
+
+    /** @test */
+    public function index_should_list_the_rigth_number_of_events()
+    {
+        for($i = 1; $i <= 10; $i++)
+        {
+            $this->createEvent(['startsAt' => new DateTime('+20 days')]);
+        }
+
+        $this->visit('/events')
+            ->assertResponseOk()
+            ->assertCount(Event::NUM_ITEMS, $this->filter('article.event'));
+    }
+
+    /** @test */
+    public function index_should_list_only_upcoming_events_ordered_by_ascending_starts_at()
+    {
+        $event3 = $this->createEvent(['name'=>'Event 3','startsAt' => new DateTime('+3 months')]);
+        $event1 = $this->createEvent(['name' => 'Event 1','startsAt' => new DateTime('+15 days')]);
+        $event2 = $this->createEvent(['name' => 'Event 2','startsAt' => new DateTime('+28 days')]);
+
+        $this->visit('/events')
+            ->assertResponseOk()
+            ->assertElementTextContains('Event 1', $this->filter('article.event')->eq(0))
+            ->assertElementTextContains('Event 2', $this->filter('article.event')->eq(1))
+            ->assertElementTextContains('Event 3', $this->filter('article.event')->eq(2));
+    }
+
+    /** @test */
+    public function index_should_properly_paginate_events()
+    {
+        for ($i = 1; $i <= 10; $i++) {
+            $this->createEvent(['startsAt' => new DateTime('+20 days')]);
+        }
+
+        $this->visit('/events?page=1')
+            ->assertResponseOk()
+            ->assertCount(3, $this->crawler->filter('article.event'));
+
+        $this->visit('/events?page=2')
+            ->assertResponseOk()
+            ->assertCount(3, $this->crawler->filter('article.event'));
+
+        $this->visit('/events?page=3')
+            ->assertResponseOk()
+            ->assertCount(3, $this->crawler->filter('article.event'));
+
+        $this->visit('/events?page=4')
+            ->assertResponseOk()
+            ->assertCount(1, $this->crawler->filter('article.event'));    
     }
 
     /** @test */

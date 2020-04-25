@@ -37,7 +37,7 @@ class AppExtension extends AbstractExtension
     }
 
 
-    public function pluralize($count, string $singular, string $plural = null)
+    public function pluralize($count, string $singular, ?string $plural = null)
     {
        
         if (!is_numeric($count)) {

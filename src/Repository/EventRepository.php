@@ -18,6 +18,7 @@ use Doctrine\ORM\QueryBuilder;
  */
 class EventRepository extends ServiceEntityRepository
 {
+    
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, Event::class);
@@ -27,7 +28,7 @@ class EventRepository extends ServiceEntityRepository
     /**
      * @return A paginator object of upcoming Event objects
      */
-    public function getUpcomingOrderedByAscStartsAtPaginator(int $page): Pagerfanta
+    public function getUpcomingOrderedByAscStartsAtPaginator(?int $page = 1): Pagerfanta
     {
         return (new Pagerfanta(new DoctrineORMAdapter($this->getUpcomingOrderedByAscStartsAtQueryBuilder())))
                   ->setMaxPerPage(Event::NUM_ITEMS)
